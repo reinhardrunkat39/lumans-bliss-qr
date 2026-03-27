@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Audio PRO</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 50px;
+      background: linear-gradient(135deg, #ff7eb3, #8e44ad);
+      color: white;
+    }
+
+    .box {
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 15px;
+      display: inline-block;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #8e44ad;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎵 QR Audio PRO</h1>
+
+<div class="box">
+  <input type="file" id="audioFile" accept="audio/*"><br><br>
+  <button onclick="uploadAudio()">Upload & Generate QR</button>
+
+  <p id="status"></p>
+  <audio id="preview" controls></audio>
+
+  <div id="qrcode"></div>
+</div>
+
+<script>
+const CLOUD_NAME = "dw8f4wvjy";
+const UPLOAD_PRESET = "audio_uplaod";
+
+let audioURL = "";
+
+async function uploadAudio() {
+  const file = document.getElementById("audioFile").files[0];
+  if (!file) return alert("Upload audio dulu!");
+
+  document.getElementById("status").innerText = "Uploading... ⏳";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
+  formData.append("resource_type", "auto"); // 🔥 FIX PENTING
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!data.secure_url) {
+      throw new Error("Upload gagal");
+    }
+
+    audioURL = data.secure_url;
+
+    document.getElementById("preview").src = audioURL;
+    document.getElementById("status").innerText = "Upload berhasil ✅";
+
+    generateQR();
+
+  } catch (err) {
+    document.getElementById("status").innerText = "Error upload ❌";
+    console.error(err);
+  }
+}
+
+function generateQR() {
+  if (!audioURL) {
+    alert("Audio belum ada!");
+    return;
+  }
+
+  const playerURL = window.location.origin + "/player.html?audio=" + encodeURIComponent(audioURL);
+
+  document.getElementById("qrcode").innerHTML = "";
+  new QRCode(document.getElementById("qrcode"), {
+    text: playerURL,
+    width: 200,
+    height: 200
+  });
+}
+</script>
+
+</body>
+</html>
