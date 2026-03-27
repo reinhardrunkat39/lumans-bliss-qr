@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Audio PRO</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Poppins;
+      text-align: center;
+      padding: 50px;
+      background: linear-gradient(135deg, #084611, #084611);
+      color: white;
+    }
+
+    .box {
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 15px;
+      display: inline-block;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #3ea317;
+      color: white;
+      cursor: pointer;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎵 QR Audio PRO</h1>
+
+<div class="box">
+  <input type="file" id="audioFile" accept="audio/*"><br><br>
+  <button onclick="uploadAudio()">Upload & Generate QR</button>
+
+  <p id="status"></p>
+  <audio id="preview" controls></audio>
+
+  <div id="qrcode"></div>
+</div>
+
+<script>
+const CLOUD_NAME = "runkat123";
+const UPLOAD_PRESET = "audio_upload";
+
+let audioURL = "";
+
+async function uploadAudio() {
+  const file = document.getElementById("audioFile").files[0];
+  if (!file) return alert("Upload audio dulu!");
+
+  document.getElementById("status").innerText = "Uploading... ⏳";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  audioURL = data.secure_url;
+
+  document.getElementById("preview").src = audioURL;
+  document.getElementById("status").innerText = "Upload berhasil ✅";
+
+  generateQR();
+}
+
+function generateQR() {
+  const playerURL = window.location.origin + "/player.html?audio=" + encodeURIComponent(audioURL);
+
+  document.getElementById("qrcode").innerHTML = "";
+  new QRCode(document.getElementById("qrcode"), playerURL);
+}
+</script>
+
+</body>
+</html>
