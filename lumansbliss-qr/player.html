@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Player</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 50px;
+      background: #111;
+      color: white;
+    }
+
+    .player {
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      display: inline-block;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎧 Play Audio</h1>
+
+<div class="player">
+  <audio id="audioPlayer" controls autoplay></audio>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const audio = params.get("audio");
+
+if (audio) {
+  document.getElementById("audioPlayer").src = audio;
+} else {
+  document.body.innerHTML = "<h2>Audio tidak ditemukan 😢</h2>";
+}
+</script>
+
+</body>
+</html>
