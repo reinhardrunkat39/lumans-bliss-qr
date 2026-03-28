@@ -7,11 +7,12 @@
 
   <style>
     body {
-      font-family: Arial;
+      font-family: Kenoky;
       text-align: center;
       padding: 50px;
-      background: linear-gradient(135deg, #1d7d25, #1a732b);
       color: white;
+      background-image: url("BG TAMPILAN QR.jpg");
+      background-size: cover;
     }
 
     .box {
@@ -20,25 +21,56 @@
       padding: 20px;
       border-radius: 15px;
       display: inline-block;
+      margin-bottom: 50px;
     }
 
     #qrcode {
-      margin-top: 20px;
+      margin-bottom: 20px;
     }
 
     button {
       padding: 10px 20px;
       border: none;
       border-radius: 10px;
-      background: #0b706b;
+      background: #0b7043;
       color: white;
       cursor: pointer;
+    }
+
+    #storage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .song-item {
+      background: #40795260;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      flex: 1 1 300px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .song-item audio {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .song-item .qr {
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<h1>🎵 QR Audio PRO</h1>
+<h1>Storage Audio
+  <strong style="color: #30722a;">LUMANS BLISS</strong>
+</h1>
 
 <div class="box">
   <input type="file" id="audioFile" accept="audio/*"><br><br>
@@ -50,17 +82,44 @@
   <div id="qrcode"></div>
 </div>
 
+<h2>Lagu yang Disimpan</h2>
+<div id="storage"></div>
+
 <script>
 const CLOUD_NAME = "dw8f4wvjy";
 const UPLOAD_PRESET = "audio_uplaod";
 
 let audioURL = "";
+let uploadedSongs = JSON.parse(localStorage.getItem('uploadedSongs')) || [];
+
+function displaySongs() {
+  const storage = document.getElementById('storage');
+  storage.innerHTML = '';
+  uploadedSongs.forEach(song => {
+    const item = document.createElement('div');
+    item.className = 'song-item';
+    item.innerHTML = `
+      <h3>${song.name}</h3>
+      <audio controls src="${song.url}"></audio>
+      <div class="qr"></div>
+    `;
+    storage.appendChild(item);
+    new QRCode(item.querySelector('.qr'), {
+      text: window.location.origin + "/player.html?audio=" + encodeURIComponent(song.url),
+      width: 150,
+      height: 150
+    });
+  });
+}
+
+displaySongs();
 
 async function uploadAudio() {
   const file = document.getElementById("audioFile").files[0];
-  if (!file) return alert("Upload audio dulu!");
+  if (!file) return alert("Boleh sto upload dulu!");
 
-  document.getElementById("status").innerText = "Uploading... ⏳";
+  document.getElementById("status").innerHTML =
+  'Uploading... <i class="fa-solid fa-circle-notch fa-spin"></i>';
 
   const formData = new FormData();
   formData.append("file", file);
@@ -85,6 +144,11 @@ async function uploadAudio() {
     document.getElementById("status").innerText = "Upload berhasil ✅";
 
     generateQR();
+
+    // Add to storage
+    uploadedSongs.push({ url: audioURL, name: file.name });
+    localStorage.setItem('uploadedSongs', JSON.stringify(uploadedSongs));
+    displaySongs();
 
   } catch (err) {
     document.getElementById("status").innerText = "Error upload ❌";
