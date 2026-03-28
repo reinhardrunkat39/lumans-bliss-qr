@@ -94,11 +94,10 @@ const audio = document.getElementById("audio");
 const progress = document.getElementById("progress");
 const button = document.querySelector("button");
 
-(audioURL) {
+if (audioURL) {
   audio.src = audioURL;
-  document.getElementById("title").innerText = "Luman's Bliss";
 } else {
-  document.getElementById("title").innerText = "No audio found!";
+  document.body.innerHTML = "<h2>Audio tidak ditemukan</h2>";
 }
 
 // PLAY / PAUSE
