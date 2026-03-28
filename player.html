@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Now Playing</title>
+<title>Lumans Bliss Song</title>
 
 <style>
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #087908, #12601a);
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
+  background-image: url("BG TAMPILAN QR.jpg");
+  background-size: cover;
 }
 
 .player-card {
@@ -69,9 +70,12 @@ button {
 <body>
 
 <div class="player-card">
-  <div class="cover">🎧</div>
+  <div class="cover">
+    <img src="LOGO LUMANS BLISS-FIKS-01.jpg"
+          alt="Cover" style="width: 100%; height: 100%; border-radius: 20px;">
+  </div>
 
-  <div class="title" id="title">Now Playing</div>
+  <div class="title" id="title">Lumans Bliss Song</div>
 
   <audio id="audio"></audio>
 
@@ -90,20 +94,21 @@ const audio = document.getElementById("audio");
 const progress = document.getElementById("progress");
 const button = document.querySelector("button");
 
-if (audioURL) {
+(audioURL) {
   audio.src = audioURL;
+  document.getElementById("title").innerText = "Luman's Bliss";
 } else {
-  document.body.innerHTML = "<h2>Audio tidak ditemukan 😢</h2>";
+  document.getElementById("title").innerText = "No audio found!";
 }
 
 // PLAY / PAUSE
 function togglePlay() {
   if (audio.paused) {
     audio.play();
-    button.innerText = "⏸";
+    button.innerHTML = '<i class="fa-solid fa-pause"></i>';
   } else {
     audio.pause();
-    button.innerText = "▶";
+    button.innerHTML = '<i class="fa-solid fa-play"></i>'; 
   }
 }
 
