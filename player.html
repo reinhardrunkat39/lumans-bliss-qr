@@ -104,10 +104,10 @@ if (audioURL) {
 function togglePlay() {
   if (audio.paused) {
     audio.play();
-    button.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    button.innerText = "▐▐";
   } else {
     audio.pause();
-    button.innerHTML = '<i class="fa-solid fa-play"></i>'; 
+    button.innerText = "▶︎";
   }
 }
 
