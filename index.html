@@ -63,6 +63,33 @@
 
     .song-item .qr {
       margin-top: 10px;
+      border-radius: 15px;
+      border: 3px solid white;
+      padding: 5px;
+      display: inline-block;
+    }
+
+    #qrcode {
+      border-radius: 15px;
+      border: 3px solid white;
+      padding: 5px;
+      display: inline-block;
+    }
+
+    .delete-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #dc3545;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
     }
   </style>
 </head>
@@ -95,24 +122,35 @@ let uploadedSongs = JSON.parse(localStorage.getItem('uploadedSongs')) || [];
 function displaySongs() {
   const storage = document.getElementById('storage');
   storage.innerHTML = '';
-  uploadedSongs.forEach(song => {
+  uploadedSongs.forEach((song, index) => {
     const item = document.createElement('div');
     item.className = 'song-item';
     item.innerHTML = `
       <h3>${song.name}</h3>
       <audio controls src="${song.url}"></audio>
       <div class="qr"></div>
+      <button class="delete-btn" onclick="deleteSong(${index})">Hapus</button>
     `;
     storage.appendChild(item);
     new QRCode(item.querySelector('.qr'), {
       text: window.location.origin + "/player.html?audio=" + encodeURIComponent(song.url),
       width: 150,
-      height: 150
+      height: 150,
+      correctLevel: QRCode.CorrectLevel.L,
+      version: 1
     });
   });
 }
 
 displaySongs();
+
+function deleteSong(index) {
+  if (confirm('Apakah Anda yakin ingin menghapus lagu ini?')) {
+    uploadedSongs.splice(index, 1);
+    localStorage.setItem('uploadedSongs', JSON.stringify(uploadedSongs));
+    displaySongs();
+  }
+}
 
 async function uploadAudio() {
   const file = document.getElementById("audioFile").files[0];
@@ -168,7 +206,9 @@ function generateQR() {
   new QRCode(document.getElementById("qrcode"), {
     text: playerURL,
     width: 200,
-    height: 200
+    height: 200,
+    correctLevel: QRCode.CorrectLevel.L,
+    version: 1
   });
 }
 </script>
